@@ -4,11 +4,16 @@ export interface IUser extends Document{
     firstName: string
     lastName: string
     email: string
-    username: string
     password: string,
     phone: string,
-    verified: boolean
-    qualified: boolean
+    address: {
+        district: string,
+        city: string,
+        country: string,
+    },
+    verifiedEmail: boolean,
+    verifiedPhone: boolean,
+    role: string,
 }
 
 export type UserInput<T> = Omit<T, keyof Document>;
