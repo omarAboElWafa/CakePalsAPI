@@ -40,17 +40,43 @@ const UserSchema :Schema = new Schema({
         required: [true, 'Phone number is required'],
         unique: true,
     },
-    loginCount :{
-        type: Number,
-        default: 0
+    address:{
+        district: {
+            type: String,
+            required: [true, 'District is required'],
+        },
+        city: {
+            type: String,
+            required: [true, 'City is required'],
+        },
+        country: {
+            type: String,
+            required: [true, 'Country is required'],
+        }
     },
-    verified: {
+    verifiedEmail: {
         type: Boolean, default: false
     },
    
-    qualified: {
+    verifiedPhone: {
         type: Boolean, default: false
     },
+    role: {
+        type: String,
+        enum: ['member', 'baker'],
+        default: 'member'
+    }, 
+    inProgressOrder: {
+        orderId:{
+            type: Schema.Types.ObjectId,
+            ref: 'Order',
+            required: false
+        },
+        orderTime: {
+            type: Date,
+            required: false
+        }
+    }
     },
     
     {timestamps: true}
