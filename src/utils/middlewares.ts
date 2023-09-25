@@ -96,7 +96,6 @@ export const verifyRefreshToken = (req: Request, res: Response, next : NextFunct
     }
 }
 
-// extract the lat and lang from the access token
 export const checkPostion = (req: Request, res: Response, next : NextFunction) => {
     const { location } = req.body;
     if(!location.lat || !location.lang){
@@ -107,9 +106,9 @@ export const checkPostion = (req: Request, res: Response, next : NextFunction) =
 
 
 export const checkBakerAvailability = async (req: Request, res: Response, next : NextFunction) => {
-    const { userID } = req.body;
+    const { productId } = req.body;
     const cacheClient = await cache.generalClientPool;
-    cache.getFromCache(cacheClient, `baker-${userID}`).then((data) => {
+    cache.getFromCache(cacheClient, `baker-${productId}`).then((data) => {
         if(data) {
             return res.status(403).send({message: `Baker is busy, the nearest available time to start baking your order is ${data}, please change the time or choose another baker`});
         }

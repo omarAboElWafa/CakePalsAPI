@@ -8,7 +8,6 @@ class ProductRouter {
         this.productController = ProductController;
     }
     getRouter = () => {
-        // TODO: Add the middlewares
         const router = Router();
         router.post('/create', verifyAccessToken, this.productController.create);
         router.get('/get', this.productController.get);

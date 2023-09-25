@@ -10,6 +10,9 @@ class ProductController {
     create = async (req: Request, res: Response) => {
         try {
             const product = await this.productService.create(req.body);
+            if (!product) {
+                return res.status(400).send({ message: 'Product was not created' });
+            }
             return res.status(201).send(product);
         } catch (error) {
             return res.status(400).send(error.message);

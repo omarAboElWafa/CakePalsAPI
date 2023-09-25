@@ -2,21 +2,23 @@ import { Request, Response } from 'express';
 import OrderService from './order.service';
 import { IOrder, OrderInput } from '@/contracts/order';
 import * as cache from '@/utils/cache';
+import ProductService from '../product/product.service';
 
 
 class OrderController {
     orderService: OrderService;
-    constructor(OrderService: OrderService) {
+    productService: ProductService;
+    constructor(OrderService: OrderService, ProductService: ProductService) {
         this.orderService = OrderService;
+        this.productService = ProductService;
     }
     
     create = async (req: Request, res: Response) => {
         const orderInput: OrderInput<IOrder> = req.body;
         const order: IOrder = await this.orderService.create(orderInput);
         if(order){
-            // cache the order end date in redis
             const cacheOrderClient = cache.generalClientPool;
-            const cacheOrderValue = await cache.setToCache(cacheOrderClient, `baker-${order.userId}`, order.expectedDeliveryDate.toISOString(), 60);
+            const cacheOrderValue = await cache.setToCache(cacheOrderClient, `baker-${order.productId}`, order.expectedDeliveryDate.toISOString(), 60);
             if(cacheOrderValue){
                 res.status(201).json({ order });
             }

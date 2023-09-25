@@ -15,6 +15,10 @@ class RatingRouter {
         router.get('/get/:id', this.ratingsController.getById);
         router.put('/update/:id', this.ratingsController.update);
         router.delete('/delete/:id', this.ratingsController.delete);
+
+        router.get('/getAverageRating/:id', this.ratingsController.getAverageRating);
+
+        return router;
     }
 
 
