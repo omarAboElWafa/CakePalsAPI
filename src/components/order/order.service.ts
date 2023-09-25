@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongoose';
+import userEntities from '../user/user.entities';
 import  Order from './order.entities';
 import { IOrder, OrderInput } from '@/contracts/order';
 
@@ -11,17 +13,21 @@ class OrderService {
         }
     }
 
-    get = async () => {
+    get = async (userID : string) => {
         try {
-            return await Order.find().lean();
+            return await Order.find(
+                { $or: [{ userId: userID }, { bakerId: userID }] }
+            ).lean();
         } catch (error) {
             throw error;
         }
     }
 
-    getById = async (id: string) => {
+    getById = async (id: string, userID: string) => {
         try{
-            return await Order.findById(id).lean();
+            return await Order.findOne({
+                $and: [{ _id: id }, { $or: [{ userId: userID }, { bakerId: userID }] }]
+            }).lean();
         } catch(error){
             throw error;
         }
@@ -35,7 +41,7 @@ class OrderService {
         }
     }
 
-    delete = async (id: string) => {
+    delete = async (id: string, userID: string) => {
         try{
             return await Order.findByIdAndDelete(id).lean();
         } catch(error){

@@ -5,7 +5,7 @@ export const getClient = async () => {
   return await new Redis(redisConfig);
 } 
 
-export const tokenClientPool = new Redis(redisConfig);
+export const generalClientPool = new Redis(redisConfig);
 
 // get data from cache
 export const getFromCache = (client:Redis, key: string): Promise<string | null> => {

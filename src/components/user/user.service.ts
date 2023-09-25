@@ -37,42 +37,42 @@ class UserService {
     }
 
     storeToken = async (id: string, token: string, expiresIn : number) => {
-        const tokensCacheClient = cache.tokenClientPool;
+        const tokensCacheClient = cache.generalClientPool;
         const stored =  await cache.setToCache(tokensCacheClient, id, token, expiresIn);
         
         return stored;
     }
 
     findToken = async (id: string) => {
-        const tokensCacheClient = cache.tokenClientPool;
+        const tokensCacheClient = cache.generalClientPool;
         const token =  await cache.getFromCache(tokensCacheClient, id);
         
         return token;
     }
 
     isRefreshTokenBlacklisted = async (id: string) => {
-        const tokensCacheClient = cache.tokenClientPool;
+        const tokensCacheClient = cache.generalClientPool;
         const blacklistedUser = await cache.getFromCache(tokensCacheClient, `${id}-blacklisted`);
         
         return !!blacklistedUser;
     }
 
     whitelistRefreshToken = async (id: string) => {
-        const tokensCacheClient = cache.tokenClientPool;
+        const tokensCacheClient = cache.generalClientPool;
         const whiteListed =  await cache.deleteFromCache(tokensCacheClient, `${id}-blacklisted`);
         
         return whiteListed;
     }
 
     blacklistRefreshToken = async (id: string) => {
-        const tokensCacheClient = cache.tokenClientPool;
+        const tokensCacheClient = cache.generalClientPool;
         const blacklisted =  await cache.setToCache(tokensCacheClient, `${id}-blacklisted`, 'true', REFRESH_TOKEN_EXPIRY_FOR_CACHE);
         
         return blacklisted;
     }
 
     deleteToken = async (id: string) => {
-        const tokensCacheClient = cache.tokenClientPool;
+        const tokensCacheClient = cache.generalClientPool;
         const deleted = await cache.deleteFromCache(tokensCacheClient, id);
         
         return deleted;

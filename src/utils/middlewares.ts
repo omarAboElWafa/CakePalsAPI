@@ -54,7 +54,7 @@ export const verifyAccessToken = async (req: Request, res: Response, next : Next
             return res.status(401).send({message: "Invalid Access Token"});
         }
         // check if the access token is in redis
-        const cacheTokenClient = cache.tokenClientPool;
+        const cacheTokenClient = cache.generalClientPool;
         const cacheAccessValue = await cache.getFromCache(cacheTokenClient, `access-${_id}`);
         if(!cacheAccessValue || cacheAccessValue !== token){
             return res.status(401).send({message: "Invalid Access Token"});
@@ -92,4 +92,19 @@ export const verifyRefreshToken = (req: Request, res: Response, next : NextFunct
         console.log(error);
         return res.status(401).send({message: "Invalid Refresh Token"});
     }
+}
+
+
+export const checkBakerAvailability = async (req: Request, res: Response, next : NextFunction) => {
+    const { userID } = req.body;
+    const cacheClient = await cache.generalClientPool;
+    cache.getFromCache(cacheClient, `baker-${userID}`).then((data) => {
+        if(data) {
+            return res.status(403).send({message: `Baker is busy, the nearest available time to start baking your order is ${data}, please change the time or choose another baker`});
+        }
+        next();
+    }).catch((err) => {
+        console.log(err);
+        return res.status(500).send({message: "Internal Server Error"});
+    });
 }
