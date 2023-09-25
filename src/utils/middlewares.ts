@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from './config';
 import * as cache from "./cache";
+import { Position } from '@/contracts/position';
 
 export const checkPhone = (req:Request, res:Response, next:NextFunction) => {
     if (req.body.phone) {
@@ -49,7 +50,7 @@ export const verifyAccessToken = async (req: Request, res: Response, next : Next
     }
     try{
         const decodedToken = jwt.verify(token, ACCESS_TOKEN_SECRET);
-        const { _id } = decodedToken as { _id : string };
+        const { _id, location } = decodedToken as { _id : string, location: Position };
         if(!_id){
             return res.status(401).send({message: "Invalid Access Token"});
         }
@@ -60,6 +61,7 @@ export const verifyAccessToken = async (req: Request, res: Response, next : Next
             return res.status(401).send({message: "Invalid Access Token"});
         }
         req.body.userID = _id;
+        req.body.location = location;
         next();
     }
     catch(error){
@@ -92,6 +94,15 @@ export const verifyRefreshToken = (req: Request, res: Response, next : NextFunct
         console.log(error);
         return res.status(401).send({message: "Invalid Refresh Token"});
     }
+}
+
+// extract the lat and lang from the access token
+export const checkPostion = (req: Request, res: Response, next : NextFunction) => {
+    const { location } = req.body;
+    if(!location.lat || !location.lang){
+        return res.status(400).send({message: "Please provide your location"});
+    }
+    next();
 }
 
 

@@ -13,14 +13,26 @@ class ProductService {
     create = async (product: ProductInput<IProduct>) => {
         try{
             const newProduct = new Product(product);
+            return await newProduct.save();
         } catch(error){
             throw error;
         }
     }
 
-    get = async () => {
+    get = async (page: number, limit: number) => {
         try{
-            return await Product.find().lean();
+            const products = await Product.find().skip((page - 1) * limit).limit(limit).lean();
+            const productsCount = await Product.find().countDocuments();
+            const totalPages = Math.ceil(productsCount / limit);
+            const hasNextPage = page < totalPages;
+            const hasPreviousPage = page > 1;
+            const pagination = {
+                hasNextPage,
+                hasPreviousPage,
+                totalPages,
+                currentPage: page
+            };
+            return {products, pagination};
         } catch(error){
             throw error;
         }

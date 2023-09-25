@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import ProductController from './product.controller';
+import { verifyAccessToken, checkPostion } from '@/utils/middlewares';
 
 class ProductRouter {
     productController: ProductController;
@@ -9,13 +10,13 @@ class ProductRouter {
     getRouter = () => {
         // TODO: Add the middlewares
         const router = Router();
-        router.post('/create', this.productController.create);
+        router.post('/create', verifyAccessToken, this.productController.create);
         router.get('/get', this.productController.get);
         router.get('/get/:id', this.productController.getById);
-        router.put('/update/:id', this.productController.update);
-        router.delete('/delete/:id', this.productController.delete);
+        router.put('/update/:id', verifyAccessToken ,this.productController.update);
+        router.delete('/delete/:id', verifyAccessToken ,this.productController.delete);
         // search near by baker's products (pagination)
-        router.get('/search', this.productController.search);
+        router.get('/search', [ verifyAccessToken ] , this.productController.search);
         return router;
     }
 }

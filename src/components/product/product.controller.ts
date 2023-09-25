@@ -10,45 +10,52 @@ class ProductController {
     create = async (req: Request, res: Response) => {
         try {
             const product = await this.productService.create(req.body);
-            res.status(201).send(product);
+            return res.status(201).send(product);
         } catch (error) {
-            res.status(400).send(error.message);
+            return res.status(400).send(error.message);
         }
     }
 
     get = async (req: Request, res: Response) => {
         try {
-            const products = await this.productService.get();
-            res.status(200).send(products);
+            const { page, limit } = req.query;
+            page && limit ? null : res.status(400).send({ message: 'page and limit query parameters are required' });
+            const pageInt = parseInt(page as string);
+            const limitInt = parseInt(limit as string);
+            const products = await this.productService.get(pageInt, limitInt);
+            if (!products) {
+                return res.status(404).send({ message: 'No products found' });
+            }
+            return res.status(200).send(products);
         } catch (error) {
-            res.status(400).send(error.message);
+            return res.status(400).send(error.message);
         }
     }
 
     getById = async (req: Request, res: Response) => {
         try {
             const product = await this.productService.getById(req.params.id);
-            res.status(200).send(product);
+            return res.status(200).send(product);
         } catch (error) {
-            res.status(400).send(error.message);
+            return res.status(400).send(error.message);
         }
     }
 
     update = async (req: Request, res: Response) => {
         try {
             const product = await this.productService.update(req.params.id, req.body);
-            res.status(200).send(product);
+            return res.status(200).send(product);
         } catch (error) {
-            res.status(400).send(error.message);
+            return res.status(400).send(error.message);
         }
     }
 
     delete = async (req: Request, res: Response) => {
         try {
             const product = await this.productService.delete(req.params.id);
-            res.status(200).send(product);
+            return res.status(200).send(product);
         } catch (error) {
-            res.status(400).send(error.message);
+            return res.status(400).send(error.message);
         }
     }
 
@@ -56,9 +63,9 @@ class ProductController {
         try {
             const { location } = req.body;
             const products = await this.productService.search(req.query, location);
-            res.status(200).send(products);
+            return res.status(200).send(products);
         } catch (error) {
-            res.status(400).send(error.message);
+            return res.status(400).send(error.message);
         }
     }
 }
