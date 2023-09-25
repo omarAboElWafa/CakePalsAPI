@@ -51,6 +51,16 @@ class ProductController {
             res.status(400).send(error.message);
         }
     }
+
+    search = async (req: Request, res: Response) => {
+        try {
+            const { location } = req.body;
+            const products = await this.productService.search(req.query, location);
+            res.status(200).send(products);
+        } catch (error) {
+            res.status(400).send(error.message);
+        }
+    }
 }
 
 

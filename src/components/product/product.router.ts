@@ -14,6 +14,8 @@ class ProductRouter {
         router.get('/get/:id', this.productController.getById);
         router.put('/update/:id', this.productController.update);
         router.delete('/delete/:id', this.productController.delete);
+        // search near by baker's products (pagination)
+        router.get('/search', this.productController.search);
         return router;
     }
 }

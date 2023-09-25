@@ -78,6 +78,27 @@ class UserService {
         return deleted;
     }
 
+    // get near by bakers
+    getNearByBakers = async (lat: number, lng: number) => {
+        try {
+            const bakers = await User.find({
+                location: {
+                    $near: {
+                        $maxDistance: 10000,
+                        $geometry: {
+                            type: 'Point',
+                            coordinates: [lng, lat],
+                        },
+                    },
+                },
+                role: 'baker',
+            }).lean();
+            return bakers;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }
 
 export default UserService;

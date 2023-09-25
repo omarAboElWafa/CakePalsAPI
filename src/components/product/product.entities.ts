@@ -31,12 +31,5 @@ const  ProductSchema : Schema  = new Schema({
     }
 });
 
-// _id : ObjectId
-// bakerId: ObjectId //refrence to user
-// name: String
-// description: String
-// price: Number
-// avgPrepTime: Number //In Minutes
-// avgDeliveryTime: Number //In Day
 
 export default mongoose.model<IProduct>('Product', ProductSchema);

@@ -76,12 +76,27 @@ const UserSchema :Schema = new Schema({
             type: Date,
             required: false
         }
+    },
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'], 
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
     }
+
     },
     
     {timestamps: true}
 );
 
+
+// index for location
+UserSchema.index({location: '2dsphere'});
 
 //hash password before saving to database
 UserSchema.pre<IUser>('save', async function (next) {
@@ -96,21 +111,7 @@ UserSchema.pre<IUser>('save', async function (next) {
 //compare password
 UserSchema.methods.comparePassword = comparePassword;
 
-// increment login count
-// TODO: check if this works
-UserSchema.methods.incrementLoginCount = async function()  {
-    // const user = this;
-    // user.loginCount = user.loginCount + 1;
-    // await user.save();
-    this.loginCount+=1;
-    return await this.save();
-}
 
-// TODO: revisit this, to make it work instead of helper function
-// UserSchema.methods.generateAuthToken = async function() {
-//     const user = this;
-//     return await generateAuthToken(user);
-// }
 
 
 export default mongoose.model<IUser>('User', UserSchema);
