@@ -13,11 +13,17 @@ class UserController {
 
     register = async (req: Request, res: Response) => {
         try{
-            const {firstName, lastName, email, password, phone} =req.body;
+            const {firstName, lastName, email, password, phone, district, city, country, role} =req.body;
             const username = helpers.usernameFromEmail(email);
-            const verified = false;
-            const qualified = false;
-            const user : UserInput<IUser> = { firstName, lastName, email, username, password, verified, phone, qualified};
+            const verifiedEmail = false;
+            const verifiedPhone = false;
+            const address = {
+                district: district,
+                city: city,
+                country: country,
+            };
+            const userRole = role ? role : "user";
+            const user : UserInput<IUser> = { firstName, lastName, email, username, password, verifiedEmail, phone, verifiedPhone, address, role: userRole};
             return res.status(201).send(await this.userService.addUser(user));
         }
         catch(error){
@@ -149,10 +155,6 @@ class UserController {
                 return res.status(404).send({message: "Invalid user"});
             }
             const token = await helpers.generateResetPasswordToken(user);
-            // const storedToken = await this.userService.storeToken(`reset-${user._id}`, token, RESET_PASSWORD_TOKEN_EXPIRY_FOR_CACHE);
-            // if(!storedToken){
-            //     return res.status(500).send({message: "Something went wrong"});
-            // }
             const resetPasswordLink = `${process.env.BASE_URL}/users/reset-password?token=${token}`;
             const messageText = `<p>Click <a href="${resetPasswordLink}">here</a> to reset your password</p>`;
             const sent = await helpers.sendGenericEmail(email, "Reset Password", messageText);
@@ -175,10 +177,6 @@ class UserController {
             if(!user){
                 return res.status(404).send({message: "Invalid user"});
             }
-            // const isValidToken = await this.userService.findToken(`reset-password-${user._id}`);
-            // if(!isValidToken || isValidToken !== token){
-            //     return res.status(401).send({message: "Invalid token"});
-            // }
             const accessToken = await helpers.generateAuthToken(user, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_EXPIRY);
             const accessStored = this.userService.storeToken(`access-${user._id}`, accessToken, ACCESS_TOKEN_EXPIRY_FOR_CACHE);
             if(!accessStored){
@@ -229,7 +227,7 @@ class UserController {
             //     return res.status(401).send({message: "Unauthorized user"});
             // }
 
-            if(user.verified){
+            if(user.verifiedEmail){
                 return res.status(200).send({message: "Email already verified"});
             }
 
@@ -266,7 +264,7 @@ class UserController {
                 return res.status(401).send({message: "Unauthorized user"});
             }
 
-            if(user.qualified){
+            if(user.verifiedPhone){
                 return res.status(200).send({message: "Phone already verified"});
             }
 
